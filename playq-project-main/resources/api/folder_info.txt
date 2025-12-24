@@ -1,0 +1,9 @@
+# API Resources Directory
+
+This directory contains API-related configurations, schemas, and utilities for API testing within the PlayQ framework.
+
+## Purpose:
+- Define API endpoints and base URLs
+- Store request/response schemas and models
+- Configure authentication methods and tokens
+- Provide API testing utilities and helpers

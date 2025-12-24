@@ -1,0 +1,9 @@
+# Pages Directory
+
+This directory contains Page Object Model (POM) implementations that represent UI screens and their interactions.
+
+## Purpose:
+- Implement Page Object Model design pattern
+- Encapsulate page-specific elements and actions
+- Provide reusable page interaction methods
+- Maintain separation between test logic and page implementation

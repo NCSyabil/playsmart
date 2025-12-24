@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "cucumberopen.cucumber-official",       // ✅ Official Cucumber plugin
+    "dbaeumer.vscode-eslint",           // ✅ Linting
+    "ms-playwright.playwright"          // ✅ Playwright helper
+  ],
+  "unwantedRecommendations": [
+  ]
+}

@@ -1,0 +1,15 @@
+# Environments Directory
+
+This directory contains environment-specific configuration files for different test execution environments.
+
+## Purpose:
+- Store environment variables and settings
+- Define URLs, credentials, and environment-specific configurations
+- Support multiple testing environments (dev, staging, prod, etc.)
+
+## Variables Format:
+```
+environment_name.variable = value
+# BROWSER = firefox
+# HEAD = false
+```

@@ -1,0 +1,17 @@
+# Extend Directory
+
+This directory contains framework extensions and add-ons that enhance the PlayQ framework functionality.
+
+## Purpose:
+- Modular extensions for specific platforms and integrations
+- AI-powered engines and pattern recognition systems
+- Domain-specific add-ons for enterprise applications
+
+## Structure:
+
+### addons/
+- `d365Crm/` - Microsoft Dynamics 365 CRM integration add-on
+  - Contains CRM-specific actions, locators, and patterns
+
+### engines/
+- `patternIq/` - Intelligent pattern recognition engine

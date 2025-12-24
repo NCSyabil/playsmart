@@ -1,0 +1,47 @@
+# Pattern Locators Directory
+
+This directory contains pattern-based intelligent locator definitions that leverage AI and machine learning for dynamic element identification.
+
+## Purpose:
+- AI-powered element detection using visual and contextual patterns
+- Self-healing locator strategies that adapt to UI changes
+- Context-aware element identification
+- Reduced test maintenance through intelligent adaptation
+
+## Pattern Format:
+```
+{{<location name>::<location value>}} {<section name>::<section value>} Element Description[<instance>]
+
+Example: {{form::registration}} {address::billing} Street Address[1]
+```
+
+## Features:
+- **Pattern Recognition**: Uses AI to identify elements based on visual patterns
+- **Context Awareness**: Considers surrounding elements and page structure
+- **Self-Healing**: Automatically adapts when UI elements change
+- **Smart Fallback**: Combines multiple identification strategies
+- **Dynamic Resolution**: Resolves patterns at runtime based on current DOM state
+
+## PatternIQ Engine:
+Configured in main config.ts:
+```typescript
+patternIq: {
+  enable: true,
+  config: "pattern",
+  retryInterval: 2000,
+  retryTimeout: 30000
+}
+```
+
+## How It Works:
+1. Analyzes DOM structure and visual patterns
+2. Uses machine learning models for element classification
+3. Considers element relationships and context
+4. Provides confidence scores for element matches
+5. Automatically updates patterns based on success rates
+
+## Benefits:
+- Reduced test flakiness from UI changes
+- Lower maintenance overhead
+- Better handling of dynamic content
+- Improved test reliability across different environments

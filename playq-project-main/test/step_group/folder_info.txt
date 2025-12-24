@@ -1,0 +1,9 @@
+# Step Groups Directory
+
+This directory contains reusable step group definitions that can be shared across multiple features and scenarios.
+
+## Purpose:
+- Define reusable sequences of steps
+- Create modular test components
+- Reduce duplication across feature files
+- Maintain consistent test patterns

@@ -1,0 +1,18 @@
+# Locators Directory
+
+This directory contains element locator definitions in multiple formats to support flexible element identification strategies.
+
+## Purpose:
+- Centralized element locator management
+- Multiple locator format support
+- Dynamic locator resolution
+- Pattern-based intelligent element detection
+
+
+JSON-based locator definitions:
+- Simple key-value format
+- Easy to maintain and read
+- Support for multiple locator strategies (XPath, CSS, ID, etc.)
+- Environment-specific locator overrides
+
+```

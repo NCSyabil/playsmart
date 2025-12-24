@@ -1,0 +1,8 @@
+# Test Data Directory
+
+This directory contains test data files, and data-driven testing resources used across the test suite.
+
+## Purpose:
+- Store test data in various formats (JSON, CSV, XML, etc.)
+- Support data-driven testing scenarios
+- Manage environment-specific test datasets

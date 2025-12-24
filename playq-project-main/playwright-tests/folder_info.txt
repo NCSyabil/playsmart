@@ -1,0 +1,8 @@
+# Playwright Tests Directory
+
+This directory contains Playwright-specific test files and configurations for direct Playwright test execution (non-Cucumber).
+
+## Purpose:
+- Pure Playwright test files (.spec.ts)
+- Environment-specific test suites
+- Step group definitions for reusable test components

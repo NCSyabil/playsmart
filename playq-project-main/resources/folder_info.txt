@@ -1,0 +1,4 @@
+# Resources Directory
+
+This directory contains shared resources, configurations, and utilities used across the entire framework.
+

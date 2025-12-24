@@ -1,0 +1,4 @@
+# TypeScript Playwright Locators Directory
+
+This directory contains TypeScript Playwright based element locator definitions providing type safety and advanced functionality.
+
