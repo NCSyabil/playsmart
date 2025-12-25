@@ -1,7 +1,0 @@
-# JSON Locators Directory
-
-This directory contains JSON-based element locator definitions for UI automation.
-
-## Purpose:
-- Store element locators in JSON format
-- Provide easy-to-read and maintain locator definitions

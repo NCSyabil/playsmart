@@ -1,3 +1,0 @@
-# Steps Directory
-
-This directory contains step definition implementations that bind Gherkin steps to executable code specific to project code

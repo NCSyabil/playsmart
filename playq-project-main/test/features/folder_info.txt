@@ -1,3 +1,0 @@
-# Features Directory
-
-This directory contains Gherkin feature files that define test scenarios in Business Driven Development (BDD) format.
