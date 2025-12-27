@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Page - Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .checkout-header {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .checkout-main {
+            max-width: 1200px;
+            margin: 30px auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            padding: 0 20px;
+        }
+        .checkout-container {
+            overflow-y: auto;
+            max-height: 800px;
+        }
+        fieldset {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: white;
+            border-radius: 5px;
+        }
+        legend {
+            font-weight: bold;
+            font-size: 1.2em;
+            padding: 0 10px;
+        }
+        .billing-section,
+        .shipping-section,
+        .payment-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        #billing, #shipping, #payment {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: white;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="email"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        input[type="checkbox"],
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+        .checkout-sidebar {
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+        .order-summary {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        #summary {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .summary-total {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #333;
+        }
+        .promo-code {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        #promo {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .checkout-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1em;
+            margin-top: 20px;
+        }
+        .checkout-btn:hover {
+            background-color: #218838;
+        }
+        .payment-methods {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .payment-method {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .payment-method:hover {
+            border-color: #007bff;
+        }
+        .payment-method input[type="radio"] {
+            display: none;
+        }
+        .payment-method input[type="radio"]:checked + label {
+            color: #007bff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header class="checkout-header">
+        <h1>Secure Checkout</h1>
+    </header>
+
+    <main class="checkout-main">
+        <div class="checkout-container" id="checkout-content">
+            <!-- Billing Information -->
+            <div id="billing" class="billing-section">
+                <h2>Billing Information</h2>
+                <fieldset>
+                    <legend>Billing Details</legend>
+                    <div class="form-group">
+                        <label for="firstname">First Name</label>
+                        <input type="text" id="firstname" name="firstname" placeholder="First Name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="lastname">Last Name</label>
+                        <input type="text" id="lastname" name="lastname" placeholder="Last Name" />
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Email" />
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" name="address" placeholder="Address" />
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" placeholder="City" />
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Country</label>
+                        <select id="country" name="country">
+                            <option value="">Select Country</option>
+                            <option value="us">United States</option>
+                            <option value="uk">United Kingdom</option>
+                            <option value="ca">Canada</option>
+                        </select>
+                    </div>
+                </fieldset>
+            </div>
+
+            <!-- Shipping Information -->
+            <div id="shipping" class="shipping-section">
+                <h2>Shipping Information</h2>
+                <fieldset>
+                    <legend>Shipping Details</legend>
+                    <div class="form-group">
+                        <input type="checkbox" id="sameasbilling" name="sameasbilling" />
+                        <label for="sameasbilling" style="display: inline; font-weight: normal;">Same as billing address</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="shippingaddress">Shipping Address</label>
+                        <input type="text" id="shippingaddress" name="shippingaddress" placeholder="Shipping Address" />
+                    </div>
+                    <div class="form-group">
+                        <label for="shippingmethod">Shipping Method</label>
+                        <select id="shippingmethod" name="shippingmethod">
+                            <option value="standard">Standard Shipping</option>
+                            <option value="express">Express Shipping</option>
+                            <option value="overnight">Overnight Shipping</option>
+                        </select>
+                    </div>
+                </fieldset>
+            </div>
+
+            <!-- Payment Details -->
+            <div id="payment" class="payment-section">
+                <h2>Payment Details</h2>
+                <fieldset>
+                    <legend>Payment Method</legend>
+                    <div class="payment-methods">
+                        <div class="payment-method">
+                            <input type="radio" id="credit-card" name="payment-method" value="credit" checked />
+                            <label for="credit-card">Credit Card</label>
+                        </div>
+                        <div class="payment-method">
+                            <input type="radio" id="paypal" name="payment-method" value="paypal" />
+                            <label for="paypal">PayPal</label>
+                        </div>
+                        <div class="payment-method">
+                            <input type="radio" id="bank-transfer" name="payment-method" value="bank" />
+                            <label for="bank-transfer">Bank Transfer</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="cardnumber">Card Number</label>
+                        <input type="text" id="cardnumber" name="cardnumber" placeholder="Card Number" />
+                    </div>
+                    <div class="form-group">
+                        <label for="cvv">CVV</label>
+                        <input type="text" id="cvv" name="cvv" placeholder="CVV" />
+                    </div>
+                </fieldset>
+            </div>
+
+            <!-- Terms and Conditions -->
+            <div class="form-group">
+                <input type="checkbox" id="terms" name="terms" />
+                <label for="terms" style="display: inline; font-weight: normal;">I agree to the terms and conditions</label>
+            </div>
+
+            <button type="submit" class="checkout-btn" data-action="complete-order">Complete Order</button>
+        </div>
+
+        <!-- Order Summary Sidebar -->
+        <aside class="checkout-sidebar" id="checkout-sidebar">
+            <div id="summary" class="order-summary">
+                <h2>Order Summary</h2>
+                <div class="summary-item">
+                    <span>Subtotal</span>
+                    <span>$99.99</span>
+                </div>
+                <div class="summary-item">
+                    <span>Shipping</span>
+                    <span>$10.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Tax</span>
+                    <span>$8.50</span>
+                </div>
+                <div class="summary-total">
+                    <span>Total</span>
+                    <span>$118.49</span>
+                </div>
+            </div>
+
+            <div id="promo" class="promo-code">
+                <h3>Promo Code</h3>
+                <input type="text" id="promocode" name="promocode" placeholder="Enter promo code" />
+                <button class="checkout-btn" style="margin-top: 10px; padding: 10px;">Apply</button>
+            </div>
+        </aside>
+    </main>
+
+    <script>
+        document.getElementById('sameasbilling').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('shippingaddress').value = document.getElementById('address').value;
+            }
+        });
+
+        document.querySelector('.checkout-btn[data-action="complete-order"]').addEventListener('click', function() {
+            alert('Order completed successfully!');
+        });
+    </script>
+</body>
+</html>

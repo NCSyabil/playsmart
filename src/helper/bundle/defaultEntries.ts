@@ -162,6 +162,21 @@ export default [
     "value": "30000",
     "description": "PatternIQ total retry timeout in milliseconds",
   },
+  {
+    "name": "config.patternIq.pageMapping./login",
+    "value": "loginPage",
+    "description": "Page object mapping for /login URL",
+  },
+  {
+    "name": "config.patternIq.pageMapping./home",
+    "value": "homePage",
+    "description": "Page object mapping for /home URL",
+  },
+  {
+    "name": "config.patternIq.pageMapping./checkout",
+    "value": "checkoutPage",
+    "description": "Page object mapping for /checkout URL",
+  },
 
   // smartAi
   {

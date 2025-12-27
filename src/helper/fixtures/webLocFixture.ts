@@ -122,10 +122,44 @@ export async function webLocResolver(
     console.log('PatternIQ enabled?', isPatternEnabled);
     if (isPatternEnabled) {
       const patternEngine = engines.patternIq;
-      return await patternEngine(page, type, selector, overridePattern, timeout)
-      // return isPatternEnabled
-      //   ? await patternEngine(page,type, selector, overridePattern, timeout)
-      //   : webFixture.getCurrentPage().locator(selector);
+      
+      // Determine which page object pattern to use
+      let patternCodeToUse = overridePattern;
+      
+      if (!patternCodeToUse) {
+        // Try automatic page object detection based on URL mapping
+        const pageMapping = vars.getPageObjectMapping();
+        if (pageMapping && Object.keys(pageMapping).length > 0) {
+          try {
+            const currentUrl = page.url();
+            console.log(` Attempting automatic page object detection for URL: ${currentUrl}`);
+            
+            // Check if current URL matches any configured page mapping
+            for (const [urlPattern, patternCode] of Object.entries(pageMapping)) {
+              if (currentUrl.includes(urlPattern)) {
+                patternCodeToUse = patternCode;
+                console.log(` Auto-detected page object "${patternCode}" based on URL pattern "${urlPattern}"`);
+                break;
+              }
+            }
+          } catch (error) {
+            console.warn(` Could not detect page object from URL:`, error.message);
+          }
+        }
+        
+        // If still no pattern code, use default from configuration
+        if (!patternCodeToUse) {
+          const defaultPattern = vars.getConfigValue('patternIq.config');
+          if (defaultPattern && defaultPattern !== 'config.patternIq.config') {
+            patternCodeToUse = defaultPattern;
+            console.log(` Using default page object from configuration: ${patternCodeToUse}`);
+          }
+        }
+      } else {
+        console.log(` Using explicit page object override: ${patternCodeToUse}`);
+      }
+      
+      return await patternEngine(page, type, selector, patternCodeToUse, timeout)
     }
 
     // Fallback to default locator

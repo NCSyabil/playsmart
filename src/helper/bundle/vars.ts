@@ -144,6 +144,40 @@ function debugVars() {
   console.log(" Static Vars:", storedVars);
 }
 
+function getLoadedPatternCodes(): string[] {
+  const patternCodes: string[] = [];
+  const patternPrefix = "pattern.";
+  
+  for (const key in storedVars) {
+    if (key.startsWith(patternPrefix)) {
+      const parts = key.split(".");
+      if (parts.length >= 2) {
+        const patternCode = parts[1];
+        if (!patternCodes.includes(patternCode)) {
+          patternCodes.push(patternCode);
+        }
+      }
+    }
+  }
+  
+  return patternCodes;
+}
+
+function getPageObjectMapping(): Record<string, string> {
+  const mappingPrefix = "config.patternIq.pageMapping.";
+  const mapping: Record<string, string> = {};
+  
+  // Reconstruct the mapping from flattened entries
+  for (const key in storedVars) {
+    if (key.startsWith(mappingPrefix)) {
+      const urlPath = key.substring(mappingPrefix.length);
+      mapping[urlPath] = storedVars[key];
+    }
+  }
+  
+  return mapping;
+}
+
 function flattenConfig(obj: any, prefix = "config"): Record<string, string> {
   const entries: Record<string, string> = {};
   for (const key in obj) {
@@ -191,15 +225,20 @@ function loadPatternEntries() {
       
       delete require.cache[require.resolve(file)];
       const patternModule = require(file);
-      const exported = patternModule[fileName] || patternModule.default?.[fileName];
+      
+      // Support both named export and default export
+      const exported = patternModule[fileName] || patternModule.default?.[fileName] || patternModule.default;
       
       if (!exported) {
         console.warn(` Exported const '${fileName}' not found in: ${file}`);
         continue;
       }
       
+      // Flatten with page object namespace (e.g., pattern.loginPage.fields.button)
       const flattened = flattenConfig(exported, `pattern.${fileName}`);
       Object.assign(storedVars, flattened);
+      
+      console.log(` Loaded page object pattern: ${fileName} (${Object.keys(flattened).length} entries)`);
     } catch (error) {
       console.warn(`Warning: Could not load pattern file ${file}:`, error.message);
     }
@@ -331,7 +370,9 @@ export {
   debugVars,
   parseLooseJson,
   loadFileEntries,
-  initVars
+  initVars,
+  getLoadedPatternCodes,
+  getPageObjectMapping
 };
 
 

@@ -213,6 +213,10 @@ async function evaluateChainedLocator(
 
 /**
  * Returns updated locator entries after replacing placeholders with global values.
+ * Loads patterns from the specified page object namespace.
+ * 
+ * @param argType - Element type (button, input, link, etc.)
+ * @returns Array of pattern template strings from the active page object
  */
 async function getLocatorEntries(argType: string): Promise<string[]> {
 
@@ -246,6 +250,8 @@ async function getLocatorEntries(argType: string): Promise<string[]> {
       .replace(/\$4\$/g, ",");
     locFieldInstance = "1";
   }
+  
+  // Set runtime variables for pattern template substitution
   vars.setValue("loc.auto.fieldName", locFieldName);
   vars.setValue("loc.auto.fieldName.toLowerCase", locFieldName.toLowerCase());
   vars.setValue("loc.auto.fieldInstance", locFieldInstance);
@@ -255,6 +261,7 @@ async function getLocatorEntries(argType: string): Promise<string[]> {
   vars.setValue("loc.auto.location.name", locLocationName);
   vars.setValue("loc.auto.section.name", locSectionName);
 
+  // Resolve location and section patterns from page object namespace
   locLocation = (locLocationName &&
     (vars.getValue(patternVarNameLocation + locLocationName) != patternVarNameLocation + locLocationName))
     ? vars.replaceVariables(vars.getValue(patternVarNameLocation + locLocationName))
@@ -264,22 +271,26 @@ async function getLocatorEntries(argType: string): Promise<string[]> {
     ? vars.replaceVariables(vars.getValue(patternVarNameSection + locSectionName))
     : "";
 
-  // console.log(">> locLocation:", locLocation);
-  // console.log(">> locLocationName:", locLocationName);
-  // console.log(">> locLocationValue:", locLocationValue);
-  // console.log(">> locSection:", locSection);
-  // console.log(">> locSectionName:", locSectionName);
-  // console.log(">> locSectionValue:", locSectionValue);
-  // console.log(">> locFieldName:", locFieldName);
-  // console.log(">> locFieldInstance:", locFieldInstance);
+  console.log(` Parsed field components:`);
+  console.log(`   - Field Name: ${locFieldName}`);
+  console.log(`   - Instance: ${locFieldInstance}`);
+  if (locLocationName) console.log(`   - Location: ${locLocationName} (${locLocation || 'not found'})`);
+  if (locSectionName) console.log(`   - Section: ${locSectionName} (${locSection || 'not found'})`);
 
-  if (vars.getValue(patternVarNameField + argType) == patternVarNameField + argType) {
-    console.warn(` No valid locators found for type "${argType}".`);
+  // Load field patterns from page object namespace
+  const patternKey = patternVarNameField + argType;
+  if (vars.getValue(patternKey) == patternKey) {
+    console.warn(` ✗ No valid locators found for type "${argType}" in active page object.`);
+    console.warn(`   Pattern key attempted: ${patternKey}`);
     return [];
   }
-  // console.log(">>>>>>>>>>>>>> vars.getValue(patternVarNameField + argType) >>>>>>>>>>>>>>>", vars.getValue(patternVarNameField + argType));
-  return vars.replaceVariables(vars.getValue(patternVarNameField + argType)).split(";");
-
+  
+  const patternsString = vars.replaceVariables(vars.getValue(patternKey));
+  const patterns = patternsString.split(";");
+  
+  console.log(` Loaded ${patterns.length} fallback pattern(s) for type "${argType}" from page object`);
+  
+  return patterns;
 }
 
 /**
@@ -343,22 +354,30 @@ async function scrollPage(page: Page): Promise<void> {
 /**
  * Helper function that loops through locator candidates, scrolls between retries,
  * and returns a valid LocatorResult or null if none is found.
+ * Uses only patterns from the active page object.
+ * 
+ * @param page - Playwright Page instance
+ * @param timeout - Maximum time to retry
+ * @param interval - Time between retries
+ * @returns LocatorResult or null
  */
 async function validateLocatorLoop(
   page: Page,
   timeout: number,
   interval: number,
 ): Promise<LocatorResult | null> {
-  // const page = webFixture.getCurrentPage();
   const startTime = Date.now();
   const labelLocators: string[] = await getLocatorEntries("label");
+  let attemptCount = 0;
 
   while (Date.now() - startTime < timeout) {
+    attemptCount++;
+    console.log(` Attempt #${attemptCount} - Trying to resolve locator...`);
+    
     // Only perform label resolution if the tag is eligible
     if (labelLocators.length > 0 && locFieldForId == "") {
-      // Try to get the domNode tag name for the field (simulate or retrieve as appropriate)
-      // For this context, we assume locType is the tag name.
       if (LABEL_ELIGIBLE_TAGS.has(locType)) {
+        console.log(` Attempting label-based resolution for ${locType} element...`);
         for (let locator of labelLocators) {
           log(`>>>>> locFieldInstance: ${locFieldInstance}`);
           
@@ -376,6 +395,9 @@ async function validateLocatorLoop(
             locatorWithInstance,
             true
           );
+          if (locFieldForId) {
+            console.log(` ✓ Label found with for="${locFieldForId}"`);
+          }
         }
       } else {
         console.debug(`⏭️ Skipping label check for tag: ${locType}`);
@@ -383,7 +405,10 @@ async function validateLocatorLoop(
     }
 
     const fieldLocators: string[] = await getLocatorEntries(locType);
-    for (let locator of fieldLocators) {
+    for (let i = 0; i < fieldLocators.length; i++) {
+      const locator = fieldLocators[i];
+      console.log(` Trying fallback pattern ${i + 1}/${fieldLocators.length}: ${locator.substring(0, 50)}${locator.length > 50 ? '...' : ''}`);
+      
       let locatorWithInstance =
         (await checkLocatorType(locator)) === "xpath" && locLocationName === "" &&
         locSectionName === "" &&
@@ -402,22 +427,27 @@ async function validateLocatorLoop(
           false
         );
         if (result && result.exists && result.visible) {
-          console.log(` Valid locator found: ${result.locator}`);
+          console.log(` ✓ Valid locator found with pattern ${i + 1}: ${result.locator}`);
           return result;
+        } else {
+          console.log(` ✗ Pattern ${i + 1} did not find visible element`);
         }
       } catch (error) {
         console.warn(
-          ` Error processing locator: ${locator} – ${
+          ` ✗ Error processing pattern ${i + 1}: ${locator.substring(0, 30)}... – ${
             (error as Error).message
           }`
         );
       }
     }
+    
     // Scroll to reveal lazy-loaded elements.
     if (page.isClosed()) {
       console.warn("️ Cannot continue loop: Page is already closed.");
       return null;
     }
+    
+    console.log(` Scrolling page to reveal lazy-loaded content...`);
     await scrollPage(page);
 
     console.log(
@@ -425,6 +455,8 @@ async function validateLocatorLoop(
     );
     await page.waitForTimeout(interval);
   }
+  
+  console.warn(` ✗ All ${attemptCount} attempts exhausted. No valid locator found.`);
   return null;
 }
 
@@ -475,6 +507,13 @@ async function resetValues() {
 /**
  * Main function that assigns globals, updates locator entries,
  * and calls the locator validation loop.
+ * 
+ * @param page - Playwright Page instance
+ * @param argType - Element type (button, input, link, etc.)
+ * @param argField - Field name with optional location/section/instance
+ * @param argOverridePattern - Optional page object Pattern_Code override
+ * @param argTimeout - Optional timeout override
+ * @returns Playwright Locator object
  */
 export async function patternIq(
   page: Page,
@@ -491,28 +530,44 @@ export async function patternIq(
   locType = argType.trim();
   let patternConfig: string;
   
+  // Determine which page object pattern configuration to use
   if (argOverridePattern) {
+    // Explicit page object override provided
     patternConfig = argOverridePattern.trim();
+    console.log(` Using explicit page object pattern override: ${patternConfig}`);
   } else {
+    // Use default page object from configuration
     patternConfig = (vars.getConfigValue("patternIq.config") === "config.patternIq.config")
       ? ""
       : vars.getConfigValue("patternIq.config");
-    if (patternConfig === "") throw new Error(` No pattern file name found. Please check your config.`);
+    if (patternConfig === "") {
+      throw new Error(` No pattern file name found. Please check your config or provide a pattern code override.`);
+    }
+    console.log(` Using default page object pattern from config: ${patternConfig}`);
   }
-console.log(` Using pattern patternConfig: ${patternConfig}`);
+
+  // Set pattern variable names with page object namespace
   patternVarNameField = "pattern." + patternConfig.trim() + ".fields.";
   patternVarNameLocation = "pattern." + patternConfig.trim() + ".locations.";
   patternVarNameSection = "pattern." + patternConfig.trim() + ".sections.";
   patternVarNameSroll = "pattern." + patternConfig.trim() + ".scroll";
 
+  console.log(` Pattern resolution context:`);
+  console.log(`   - Page Object: ${patternConfig}`);
+  console.log(`   - Element Type: ${argType}`);
+  console.log(`   - Field Name: ${argField}`);
+
   const timeout = (argTimeout) ? argTimeout : (vars.getConfigValue('patternIq.retryTimeout') != 'config.patternIq.retryTimeout') ? Number(vars.getConfigValue('patternIq.retryTimeout')) : 30 * 1000;
   const interval =  (vars.getConfigValue('patternIq.retryInterval') != 'config.patternIq.retryInterval') ? Number(vars.getConfigValue('patternIq.retryInterval')) : 2000;
+  
   const result = await validateLocatorLoop(page, timeout, interval);
+  
   if (result && result.exists && result.visible) {
+    console.log(` ✓ Successfully resolved locator for page object "${patternConfig}": ${result.locator}`);
     return page.locator(result.locator.toString());
   } else {
     console.warn(
-      `️ Timeout reached! No valid locator found for type "${argType}" with field name "${argField}".`
+      `️ ✗ Timeout reached! No valid locator found for page object "${patternConfig}", type "${argType}", field "${argField}".`
     );
     return page.locator("");
   }

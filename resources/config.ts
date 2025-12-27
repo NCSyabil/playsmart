@@ -41,6 +41,11 @@ export const config = {
     config: "uportalOb",
     retryInterval: 2000, // [in milliseconds] Expected: Numeric only. Default: 2000 milliseconds (2 seconds) *
     retryTimeout: 30000, // [in milliseconds] Expected: Numeric only. Default: 30000 milliseconds (30 seconds) *
+    pageMapping: { // URL-based page object detection mapping
+      "/login": "loginPage",
+      "/home": "homePage",
+      "/checkout": "checkoutPage"
+    }
   },
   smartAi: {
     enable:false, // [true | false] Expected: Boolean only. Default: false *
